@@ -173,7 +173,7 @@
                     <button onclick="setThisWeek()" class="bg-sky-600 hover:bg-sky-700 text-white px-4 py-2 rounded-xl transition text-xs font-bold shadow-sm">
                         이번주 보기
                     </button>
-                    <button onclick="navigateWeek(7)" class="bg-white hover:bg-slate-100 border border-slate-300 text-slate-700 px-3.5 py-2 rounded-xl transition text-xs font-bold flex items-center gap-1 shadow-sm">
+                    <button onclick="navigateWeek(7)" class="bg-white hover:bg-slate-100 border border-slate-300 text-slate-700 px-3.5 py-2 rounded-xl transition text-xs font-bold gap-1 shadow-sm">
                         다음주 <i class="fa-solid fa-chevron-right"></i>
                     </button>
                 </div>
@@ -194,7 +194,7 @@
             <div id="statusBox" class="hidden rounded-2xl p-4 border text-center text-xs font-medium my-2"></div>
 
             <div id="weeklyMealGrid" class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4">
-                <!-- Dynamically generated 5 days (Mon-Fri) cards -->
+                <!-- Dynamically generated 5 days cards -->
             </div>
 
             <div class="bg-slate-50 border border-slate-200 rounded-2xl p-4 sm:p-5 shadow-sm space-y-3">
@@ -234,7 +234,6 @@
         </footer>
     </div>
 
-    <!-- Detail Nutrition / Origin Modal -->
     <div id="detailModal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm hidden flex items-center justify-center p-4 z-50">
         <div class="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl space-y-4 max-h-[85vh] flex flex-col">
             <div class="flex justify-between items-center border-b border-slate-100 pb-3">
@@ -273,7 +272,6 @@
         </div>
     </div>
 
-    <!-- Schedule Event Detail Modal -->
     <div id="schedModal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm hidden flex items-center justify-center p-4 z-50">
         <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl space-y-4">
             <div class="flex justify-between items-center border-b border-slate-100 pb-3">
@@ -385,25 +383,11 @@
             }
         }
 
-        // Helper to format elective subject names to display only selection tag with alphabet (e.g., 선택(a))
-        function formatSubjectWithAlphabet(subjectName) {
-            if (!subjectName) return '-';
-            let formatted = subjectName.trim();
-            
-            // If already formatted with 선택(a~d), return just that part
-            const matchExisting = formatted.match(/선택\s*\([abcd]\)/i);
-            if (matchExisting) {
-                return matchExisting[0];
-            }
-
-            // Define mandatory core subjects that should NOT be marked as electives
-            const mandatoryKeywords = ['국어', '수학', '영어', '한국사', '체육', '음악', '미술', '보건', '영양', '진로', '창체', '자율', '동아리', '봉사', '진로활동', '안전한생활'];
         // Helper to format elective subject names as "선택과목"
         function formatSubjectWithAlphabet(subjectName) {
             if (!subjectName) return '-';
             let formatted = subjectName.trim();
             
-            // Define mandatory core subjects that should NOT be marked as electives
             const mandatoryKeywords = ['국어', '수학', '영어', '한국사', '체육', '음악', '미술', '보건', '영양', '진로', '창체', '자율', '동아리', '봉사', '진로활동', '안전한생활'];
             const isMandatory = mandatoryKeywords.some(m => formatted === m || (formatted.includes(m) && formatted.length <= 4 && !formatted.includes('선택')));
 
@@ -428,7 +412,7 @@
                 { title: "학생 건강검진", holiday: "해당없음", content: "지정 병원 방문 검진" },
                 { title: "학교운영위원회 회의", holiday: "해당없음", content: "시청각실 오후 4시" }
             ];
-            const sampleSubjects = ["국어", "수학", "영어", "물리학I", "화학I", "생명과학I", "지구과학I", "한국사", "체육", "음악", "진로활동"];
+            const sampleSubjects = ["국어", "수학", "영어", "물리학I", "선택과목", "화학I", "한국사", "체육", "음악", "진로활동"];
 
             for (let i = 0; i < 5; i++) {
                 const d = new Date(mondayDate);
@@ -493,7 +477,7 @@
             const list = SCHOOL_PRESETS[officeCode] || SCHOOL_PRESETS['J10'];
             list.forEach(p => {
                 const btn = document.createElement('button');
-                btn.className = 'bg-slate-200/70 hover:bg-sky-500 hover:text-white text-slate-700 px-2.5 py-1 rounded-lg text-xs transition font-medium shadow-2xs';
+                btn.className = 'bg-slate-200/75 hover:bg-sky-500 hover:text-white text-slate-700 px-2.5 py-1 rounded-lg text-xs transition font-medium shadow-2xs';
                 btn.textContent = p.name;
                 btn.onclick = () => {
                     selectSchool(officeCode, getOfficeNameByCode(officeCode), p.code, p.name, p.kind || '');
@@ -843,7 +827,7 @@
                     }
                 }
 
-                // 2. Render Timetable Block with formatted elective subject names (showing only alphabet/selection tag)
+                // 2. Render Timetable Block with formatted elective subject names
                 if (currentViewMode !== 'MEAL' && currentViewMode !== 'SCHED') {
                     let tableHtml = `
                         <div class="flex justify-between items-center mb-1">
@@ -977,10 +961,7 @@
             document.getElementById('schedModalHoliday').textContent = holidayStr;
 
             const contentBox = document.getElementById('schedModalContentBox');
-            if (contentStr && contentStr.term) { // checking contentStr
-                document.getElementById('schedModalContent').textContent = contentStr;
-                contentBox.classList.remove('hidden');
-            } else if (contentStr && contentStr.trim()) {
+            if (contentStr && contentStr.trim()) {
                 document.getElementById('schedModalContent').textContent = contentStr;
                 contentBox.classList.remove('hidden');
             } else {
